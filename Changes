@@ -1,0 +1,5 @@
+Revision history for Types::DBIx::Class
+
+1.000000 April 27, 2015
+
+    * Initial version, forked from MooseX::Types::DBIx::Class
