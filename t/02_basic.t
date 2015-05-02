@@ -32,8 +32,8 @@ $schema->resultset('Fluffles')->create({ fluff_factor => 9001 });
 
 ok(is_Schema($schema),'is_Schema');
 ok(is_ResultSet(my $rset = $schema->resultset('Fluffles')),'is_ResultSet');
-ok(is_ResultSource(my $rsource = $schema->resultset('Fluffles')->result_source),'is_ResultSource');
-ok(is_Row(my $row = $schema->resultset('Fluffles')->first),'is_Row');
+ok(is_ResultSource(my $rsource = $rset->result_source),'is_ResultSource');
+ok(is_Row(my $row = $rset->first),'is_Row');
 
 ok(!is_Schema($rset),'!is_Schema');
 ok(!is_ResultSet($schema),'!is_ResultSet');

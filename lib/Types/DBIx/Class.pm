@@ -8,25 +8,16 @@ use strict;
 use warnings;
 use Carp;
 
-use Type::Library -base,
-  -declare => qw(
-    BaseResultSet
-    BaseResultSource
-    BaseRow
-    BaseSchema
-);
+use Type::Library -base;
 use Type::Utils -all;
 use Type::Params;
 use Types::Standard qw(Maybe Str RegexpRef ArrayRef Ref InstanceOf);
-use Sub::Quote ();
+use Sub::Quote;
 
-class_type BaseResultSet, { class => 'DBIx::Class::ResultSet' };
-
-class_type BaseResultSource, { class => 'DBIx::Class::ResultSource' };
-
-class_type BaseRow, { class => 'DBIx::Class::Row' };
-
-class_type BaseSchema, { class => 'DBIx::Class::Schema' };
+# Create anonymous base types, checks
+my %base =
+  map { ($_ => InstanceOf["DBIx::Class::$_"]) }
+  qw[ResultSet ResultSource Row Schema];
 
 # Grep shorthand
 sub _eq_array {
@@ -39,10 +30,16 @@ sub _eq_array {
 my $check_param = Type::Params::compile(ArrayRef|Str|InstanceOf['Type::Tiny']);
 my $check_param_reg = Type::Params::compile(RegexpRef|Str);
 
-my %param_types=(ResultSet => BaseResultSet,
-		 Row => BaseRow);
+my $get_rs_s_name = sub {$_[0].'->result_source->source_name'};
 
-while (my ($type, $parent) = each %param_types) {
+my %param_types=
+  (ResultSource => [$base{ResultSource},sub {$_[0].'->source_name'}],
+   ResultSet => [$base{ResultSet},$get_rs_s_name],
+   Row => [$base{Row},$get_rs_s_name]);
+
+while (my ($type, $specifics) = each %param_types) {
+  my ($parent, $get_name) = @$specifics;
+  my $pcheck = Type::Params::compile($parent);
   declare $type,
   parent => $parent,
   deep_explanation => sub
@@ -51,7 +48,7 @@ while (my ($type, $parent) = each %param_types) {
     $r = $_[0] // '';
     my $source_name = $maintype->type_parameter;
     [sprintf('variable %s type %s is not a '.$type.'%s', $varname,
-	     ( $maintype->check($r) ? $type.'[' . $r->result_source->source_name . ']' : qq('$r') ),
+	     ( $maintype->check($r) ? $type.'[' . eval($get_name->('$r')) . ']' : qq('$r') ),
 	     ( defined $source_name ? "[$source_name]" : '' ))
     ]
   },
@@ -64,49 +61,21 @@ while (my ($type, $parent) = each %param_types) {
       croak "$@ in $type parameter check called from";
     }
     my $check = $source =~ /^\w+$/ ?
-      "\$_->result_source->source_name eq '$source'" :
+      $get_name->('$_')." eq '$source'" :
    $source =~ /^[\w|]+$/ ?
-      "\$_->result_source->source_name =~ /^(?:$source)\$/" :
-      "_eq_array(\$_->result_source->source_name, \$source)";
-
-    return Sub::Quote::quote_sub("is_Base$type(\$_) && $check",
-				 {'$source' => \$source});
-  };
-}
-
-declare 'ResultSource',
-  parent => BaseResultSource,
-  deep_explanation => sub
-  {
-    my ($maintype, $r, $varname) = @_;
-    $r = $_[0] // '';
-    my $source_name = $maintype->type_parameter;
-    [sprintf('variable %s type %s is not a ResultSource%s', $varname,
-            ( is_BaseResultSource($r) ? 'ResultSource[' . $r->source_name . ']' : qq('$r') ),
-            ( defined $source_name ? "[$source_name]" : '' ))
-    ]
-  },
-  constraint_generator => sub
-  {
-    return BaseResultSource unless @_;
-    my ($source) = eval {$check_param->(@_)};
-    if ($@) {
-      local $Carp::CarpInternal{'Type::Tiny'}=1;
-      croak "$@ in ResultSource parameter check called from";
-    }
-    my $check = $source =~ /^\w+$/ ?
-      "\$_->source_name eq '$source'" :
-   $source =~ /^[\w|]+$/ ?
-      "\$_->source_name =~ /^(?:$source)\$/" :
-      "_eq_array(\$_->source_name, \$source)";
+      $get_name->('$_')."=~ /^(?:$source)\$/" :
+      "_eq_array(".$get_name->('$_').", \$source)";
 
     return Sub::Quote::quote_sub
-      "is_BaseResultSource(\$_[0]) && $check"
-  };
+      "\$pcheck->(\$_) && $check",
+      { '$pcheck' => \$pcheck, '$source' => \$source } };
+}
 
 
+# This one was different enough to pull out of the loop
+my $pcheck = Type::Params::compile($base{Schema});
 declare 'Schema',
-  parent => BaseSchema,
+  parent => $base{Schema},
   deep_explanation => sub
   {
     my ($maintype, $s, $varname) = @_;
@@ -118,15 +87,15 @@ declare 'Schema',
   },
   constraint_generator => sub
   {
-    return BaseSchema unless @_;
+    return $base{Schema} unless @_;
     my ($pattern) = eval {$check_param_reg->(@_)};
     if ($@) {
       local $Carp::CarpInternal{'Type::Tiny'}=1;
       croak "$@ in Schema parameter check called from";
     }
     return Sub::Quote::quote_sub
-      "is_BaseSchema(\$_[0]) &&(!\$pattern || ref(\$_[0]) =~ \$pattern)",
-      { '$pattern' => \$pattern }
+      "\$pcheck->(\$_) &&(!\$pattern || ref(\$_) =~ \$pattern)",
+      { '$pattern' => \$pattern, '$pcheck' => \$pcheck }
   };
 
 __PACKAGE__->meta->make_immutable;
