@@ -45,10 +45,9 @@ while (my ($type, $specifics) = each %param_types) {
   deep_explanation => sub
   {
     my ($maintype, $r, $varname) = @_;
-    $r = $_[0] // '';
+    $r //= '';
     my $source_name = $maintype->type_parameter;
     [sprintf('variable %s type %s is not a '.$type.'%s', $varname,
-	     ( $maintype->check($r) ? $type.'[' . eval($get_name->('$r')) . ']' : qq('$r') ),
 	     ( defined $source_name ? "[$source_name]" : '' ))
     ]
   },
@@ -79,7 +78,7 @@ declare 'Schema',
   deep_explanation => sub
   {
     my ($maintype, $s, $varname) = @_;
-    $s = $_[0] // '';
+    $s //= '';
     my $pattern = $maintype->type_parameter;
     [sprintf('variable %s type %s is not a Schema%s', $varname,
 	     qq('$s'), $pattern ? qq([$pattern]) : '')

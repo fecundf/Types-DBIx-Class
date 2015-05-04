@@ -26,18 +26,18 @@ my $schema = Test::Schema->connect('dbi:SQLite::memory:');
 $schema->deploy;
 $schema->resultset('Fluffles')->create({ fluff_factor => 9001 });
 
-my $rset = $schema->resultset('Fluffles');
+my ($rset) = $schema->resultset('Fluffles');
 my $rsource = $rset->result_source;
 my $row = $rset->first;
 
+my %types = (Row => Row['other'],
+	     Schema => Schema['other'],
+	     ResultSet => ResultSet['other'],
+	     ResultSource => ResultSource->parameterize('other')
+	    );
+
 BEGIN {
   # For each type in Types::DBIx::Class, check parameterized explanations
-
-  my %types = (Row => Row['other'],
-	       Schema => Schema['other'],
-	       ResultSet => ResultSet['other'],
-	       ResultSource => ResultSource['other']
-	      );
 
   sub foreach_type (&){
     my $to_run = shift;
@@ -59,18 +59,27 @@ my $bad_types = join ',', foreach_type {
 };
 $bad_types && BAIL_OUT "Type::Tiny won't call deep expanation for $bad_types";
 
+# Check that we call deep_explain when needed, and that it looks OK
 sub explain_like {
-  my ($obj,$msg,@expected_reasons)=@_;
+  my ($obj,$msg,$expected_reasons)=@_;
   foreach_type {
     my $type = shift;
-    my $explanations = $type->validate_explain($obj,'$obj');
+    my $val = ref $obj eq "HASH" ? $obj->{$_} : $obj;
+    my $explanations = $type->validate_explain($val,'$val');
 
-    for my $explanation (@$explanations) {
-      diag $explanation;
-      #    like shift @expected_reasons, "$explanation-$type_name", $msg;
-    }
+    my $explanation=join "\n",@$explanations;
+    diag $explanation unless
+      like $explanation, $expected_reasons, "$msg-$_";
   }
 }
 
-explain_like undef,'undef';
+explain_like undef,'undef',qr/is a subtype|Not a blessed reference/;
 
+explain_like {
+    Schema =>$schema,
+    Row => $row,
+    ResultSet => $rset,
+    ResultSource => $rsource
+},'explain',qr/variable .val type '.*?(ResultSource|Schema|ResultSet).*' is not a (\1|Row).other/;
+
+done_testing;
