@@ -48,6 +48,7 @@ while (my ($type, $specifics) = each %param_types) {
     $r //= '';
     my $source_name = $maintype->type_parameter;
     [sprintf('variable %s type %s is not a '.$type.'%s', $varname,
+	     ( $maintype->check($r) ? $type.'[' . eval($get_name->('$r')) . ']' : "'".ref($r||'')."'" ),
 	     ( defined $source_name ? "[$source_name]" : '' ))
     ]
   },
