@@ -32,10 +32,10 @@ my $rsource = $rset->result_source;
 my $row = $rset->first;
 
 my %types = (Row => Row['other'],
-	     Schema => Schema['other'],
-	     ResultSet => ResultSet['other'],
-	     ResultSource => ResultSource->parameterize('other')
-	    );
+             Schema => Schema['other'],
+             ResultSet => ResultSet['other'],
+             ResultSource => ResultSource->parameterize('other')
+            );
 
 BEGIN {
   # For each type in Types::DBIx::Class, check parameterized explanations

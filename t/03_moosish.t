@@ -51,8 +51,8 @@ BEGIN {
       return Sub::Quote::quote_sub "\$_->fluff_factor == $threshold";
 
       return sub {
-	#Row(['Fluffles'])->check($_) &&
-	  $_->fluff_factor == $threshold;
+        #Row(['Fluffles'])->check($_) &&
+          $_->fluff_factor == $threshold;
       };
    };
   __PACKAGE__->meta->make_immutable;
@@ -72,7 +72,7 @@ my $Moosish_template = q{
     has fluffles_or_falafels_array => ( is => 'rw',
             isa => ResultSet [ [qw(Falafels Fluffles)] ] );
     has fluffles_or_falafels_union => ( is => 'rw',
-	    isa => ResultSet [ Falafels|Fluffles ] );
+            isa => ResultSet [ Falafels|Fluffles ] );
     has fluffles_source => ( is => 'rw', isa => ResultSource[Fluffles] );
     has falafel_row     => ( is => 'rw', isa => Row[Falafels]          );
     has any_row         => ( isa => Row, is => 'rw'                    );

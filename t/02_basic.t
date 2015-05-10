@@ -40,14 +40,24 @@ ok(!is_ResultSet($schema),'!is_ResultSet');
 ok(!is_ResultSource($row),'!is_ResultSource');
 ok(!is_Row($rsource),'!is_Row');
 
-ok((Row['Fluffles'])->check($row),'Row Fluffles');
+ok((my $fluff_row_type = Row['Fluffles'])->check($row),'Row Fluffles');
 ok((ResultSet['Fluffles'])->check($rset),'ResultSet Fluffles');
 ok((ResultSource['Fluffles'])->check($rsource),'ResultSource Fluffles');
 ok((Schema[qr/Test/])->check($schema),'Schema Test');
 
 ok(!(Schema['other'])->check($schema),'!Schema other');
-ok(!(Row['other'])->check($row),'!Row other');
+ok(!(my $other_row_type = Row['other'])->check($row),'!Row other');
 ok(!(ResultSet['other'])->check($rset),'!ResultSet other');
 ok(!(ResultSource['other'])->check($rsource),'!ResultSource other');
+
+my $validator = $fluff_row_type->compiled_check;
+ok($validator->($row),'compiled_check succeeds');
+$validator = $other_row_type->compiled_check;
+ok(!$validator->($row),'compiled_check rejects bad type');
+
+ok($fluff_row_type->assert_valid($row),'assert_valid');
+ok(!eval{$other_row_type->assert_valid($row);1} &&
+   $@ =~ /Fluffles.*other/,'assert_valid dies on bad type');
+
 
 done_testing;

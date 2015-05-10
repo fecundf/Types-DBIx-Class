@@ -10,6 +10,8 @@ BEGIN {
 
 use Test::More;
 
-eval "use Test::Kwalitee";
+eval "use Test::Kwalitee 'kwalitee_ok'";
 plan skip_all => "Test::Kwalitee required for testing kwalitee"
   if $@;
+kwalitee_ok();
+done_testing;
