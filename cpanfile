@@ -3,7 +3,7 @@ requires 'Sub::Quote';
 requires 'DBIx::Class';
 
 on 'test' => sub {
-  requires 'Test::more';
+  requires 'Test::More', '1.001010'; # For "use ok"
   requires 'DBD::SQLite';
 };
 

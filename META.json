@@ -47,7 +47,7 @@
       "test" : {
          "requires" : {
             "DBD::SQLite" : "0",
-            "Test::more" : "0"
+            "Test::More" : "1.001010"
          }
       }
    },
