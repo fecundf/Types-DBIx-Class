@@ -1,7 +1,7 @@
 {
    "abstract" : "A Type::Library for DBIx::Class objects",
    "author" : [
-      "Yary Hluchan <yary@cpan.org>",
+      "Yary Hluchan <yary@cpan.org>"
    ],
    "dynamic_config" : "0",
    "generated_by" : "App::ModuleBuildTiny version 0.009",
@@ -52,5 +52,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "1.000000"
+   "version" : "1.000001"
 }
