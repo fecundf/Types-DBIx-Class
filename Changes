@@ -1,8 +1,9 @@
 Revision history for Types::DBIx::Class
 
-1.000003 May 26, 2015
+1.000003 & 004 May 26, 2015
 
     * Added test prereq SQL::Translator, thanks to CPANTESTER smokers.
+    * Declared Perl 5.010 required due to using defined-OR. Can remove that feature if there's demand to run under Perl 5.0008
 
 1.000002 May 25, 2015
 

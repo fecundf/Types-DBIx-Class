@@ -1,3 +1,4 @@
+requires 'perl', '5.010';
 requires 'Type::Tiny', '0.040';
 requires 'Sub::Quote';
 requires 'DBIx::Class';

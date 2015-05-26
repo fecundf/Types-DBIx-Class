@@ -39,6 +39,7 @@
       },
       "runtime" : {
          "requires" : {
+            "perl" : "5.010",
             "DBIx::Class" : "0",
             "Sub::Quote" : "0",
             "Type::Tiny" : "0.040"
@@ -53,5 +54,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "1.000003"
+   "version" : "1.000004"
 }
