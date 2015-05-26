@@ -1,5 +1,13 @@
 Revision history for Types::DBIx::Class
 
+1.000003 May 26, 2015
+
+    * Added test prereq SQL::Translator, thanks to CPANTESTER smokers.
+
+1.000002 May 25, 2015
+
+    * Fixed typo in META dependency list. Thanks A. Ciornii for reporting.
+
 1.000000 April 27, 2015
 1.000001 May 13, 2015
 

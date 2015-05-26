@@ -1,7 +1,7 @@
 This archive contains the distribution Types-DBIx-Class,
-version 1.000001:
+version 1.000003:
 
-  Types::Tiny for DBIx::Class objects
+  Type::Tiny for DBIx::Class objects
 
 It provides type checking for various DBIx::Class objects "Schema",
 "Rows", "ResultSet", and "ResultSource", and allows parameterizing

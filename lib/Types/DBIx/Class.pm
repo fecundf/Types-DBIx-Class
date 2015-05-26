@@ -1,6 +1,6 @@
 package Types::DBIx::Class;
 BEGIN {
-  $Types::DBIx::Class::VERSION = '1.000001';
+  $Types::DBIx::Class::VERSION = '1.000003';
 }
 
 use strict;

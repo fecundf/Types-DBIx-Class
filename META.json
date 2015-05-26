@@ -41,16 +41,17 @@
          "requires" : {
             "DBIx::Class" : "0",
             "Sub::Quote" : "0",
-            "Types::Tiny" : "0.040"
+            "Type::Tiny" : "0.040"
          }
       },
       "test" : {
          "requires" : {
             "DBD::SQLite" : "0",
-            "Test::More" : "1.001010"
+             "Test::More" : "1.001010",
+	     "SQL::Translator" : "0.11018"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "1.000001"
+   "version" : "1.000003"
 }
