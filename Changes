@@ -1,5 +1,9 @@
 Revision history for Types::DBIx::Class
 
+1.000005 May 28, 2015
+
+    * Older Sub::Quote didn't set package, so be explicit when calling _eq_array
+
 1.000003 & 004 May 26, 2015
 
     * Added test prereq SQL::Translator, thanks to CPANTESTER smokers.

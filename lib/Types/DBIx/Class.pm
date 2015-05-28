@@ -1,6 +1,6 @@
 package Types::DBIx::Class;
 BEGIN {
-  $Types::DBIx::Class::VERSION = '1.000004';
+  $Types::DBIx::Class::VERSION = '1.000005';
 }
 
 use strict;
@@ -18,7 +18,7 @@ my %base =
   map { ($_ => InstanceOf["DBIx::Class::$_"]) }
   qw[ResultSet ResultSource Row Schema];
 
-# Grep shorthand
+# Grep/first shorthand
 sub _eq_array {
   my($value, $other) = @_;
   for (@$other) { return 1 if $value eq $_ }
@@ -63,7 +63,7 @@ while (my ($type, $specifics) = each %param_types) {
       $get_name->('$_')." eq '$source'" :
    $source =~ /^[\w|]+$/ ?
       $get_name->('$_')."=~ /^(?:$source)\$/" :
-      "_eq_array(".$get_name->('$_').", \$source)";
+      "Types::DBIx::Class::_eq_array(".$get_name->('$_').", \$source)";
 
     return Sub::Quote::quote_sub
       "\$pcheck->(\$_) && $check",
